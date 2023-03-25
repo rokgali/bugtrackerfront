@@ -5,6 +5,8 @@ import Register from './authentication/register';
 import LogIn from './authentication/login';
 import Error from './error';
 
+
+
 function App() {
   return (
     <BrowserRouter>
