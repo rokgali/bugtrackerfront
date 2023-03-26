@@ -12,37 +12,38 @@ import ProtectedRoute from './components/protectedroute';
 function App() {
   // Authentication status
   var [authenticated, setAuthenticated] = useState<boolean | null>(null);
-
-  async function checkAuth(): Promise<boolean> {
-    const token: string | null = localStorage.getItem('jwt');
-    console.log(token);
-    if(token == null) {
-      return false
-    }
-    axios.defaults.headers.common['Authorization'] = `bearer ${token}`;
-          
-    const apiUrl = 'https://localhost:7047/api/User/JWTcheck';
-    
-
-    const response = await axios.post<boolean>(apiUrl, token);
-    console.log(response.status);
-
-    return response.data;
-  }
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    async function jwtCheck() {
-      const AuthValue = await checkAuth();
-      setAuthenticated(AuthValue);
+    const token: string | null = localStorage.getItem('jwt');
+    console.log(token);
+    if(token != null) {
+      axios.defaults.headers.common['Authorization'] = `bearer ${token}`;
+          
+      const apiUrl = 'https://localhost:7047/api/User/JWTcheck';
+      
+  
+      axios.post<boolean>(apiUrl + `?token=${token}`)
+      .then(res => setAuthenticated(res.data.valueOf()))
+      .catch(() => setAuthenticated(false))
+      .finally(() => setIsLoading(false))
+    } else {
+      setAuthenticated(false);
+      setIsLoading(false);
     }
-    jwtCheck();
   }, []);
 
   const authenticate = () => {
     setAuthenticated(true);
   }
-
   {console.log(authenticated)}
+  if(isLoading && authenticated == null)
+  {
+    return (
+      <div>Loading...</div>
+    );
+  }
+  
     return(
       <Routes>
         <Route path="/register" element={<Register />} />
