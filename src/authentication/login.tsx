@@ -2,12 +2,16 @@ import { useState } from "react";
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 
+interface LoginProps{
+  authenticate(): void
+}
+
 interface FormData {
     email: string;
     password: string;
 }
 
-export default function LogIn()
+export default function LogIn(props: LoginProps)
 {
     const navigate = useNavigate();
     const [formData, setFormData] = useState<FormData>({
@@ -22,14 +26,16 @@ export default function LogIn()
         });
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        axios.post('https://localhost:7047/api/User/login', formData)
+        await axios.post('https://localhost:7047/api/User/login', formData)
         .then(res => {
           console.log(res.data);
           const token: string = res.data;
+          localStorage.setItem('jwt', token);
           axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            
+          props.authenticate();
+
           navigate('/');
         })
         .catch(err => {
