@@ -1,21 +1,13 @@
-import axios from 'axios';
-import { useEffect } from 'react';
-
-interface Project {
-
-}
+import CreateProject from "./components/createproject";
 
 export default function Dashboard()
 {
-    useEffect(() => {
-        axios.post<string>('https://localhost:7047/api/Project/projects1')
-        .then(resp => {
-            console.log(resp.data);
-        })
-        .catch(err =>{
-            console.error(err)
-        });
-    }, []);
-
-    return(<div>I am a dashboard</div>);
+    return(
+        <>
+        <div>
+            <p>Create new project</p>
+            <CreateProject />
+        </div>
+        </>
+    );
 }
