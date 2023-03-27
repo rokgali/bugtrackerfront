@@ -37,7 +37,7 @@ function App() {
     setAuthenticated(true);
   }
   {console.log(authenticated)}
-  if(isLoading && authenticated == null)
+  if(isLoading || authenticated == null)
   {
     return (
       <div>Loading...</div>

@@ -6,12 +6,12 @@ export default function Logout()
     
 
     const logOut = () => {
-        
+        localStorage.removeItem('jwt');
 
         navigate('/login');
     }
 
     return(
-        <button onClick={logOut}>Log out</button>
+        <button type="button" onClick={logOut}>Log out</button>
     );
 }
