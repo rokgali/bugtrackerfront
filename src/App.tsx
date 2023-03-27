@@ -20,7 +20,7 @@ function App() {
     if(token != null) {
       axios.defaults.headers.common['Authorization'] = `bearer ${token}`;
           
-      const apiUrl = 'https://localhost:7047/api/User/JWTcheck';
+      const apiUrl = 'https://localhost:7047/api/User/ValidateToken';
       
   
       axios.post<boolean>(apiUrl + `?token=${token}`)

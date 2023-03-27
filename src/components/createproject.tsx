@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import CustomModal from "./modal";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 type User = {
     id: string,
@@ -18,6 +19,7 @@ interface Project {
 
 export default function CreateProject()
 {
+    const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const [currEmail, setUserEmail] = useState('');
     const [users, setUsers] = useState<User[]>([]);
@@ -38,13 +40,13 @@ export default function CreateProject()
     }
 
     useEffect(() => {
-        axios.post<User[]>('https://localhost:7047/api/User/usersEmails')
+        axios.post<User[]>('https://localhost:7047/api/User/GetUserEmails')
         .then(res=> {
             console.log(res.data);
             setUsers(res.data)
         })
         const jwt = localStorage.getItem('jwt');
-        axios.get<string>('https://localhost:7047/api/User/userEmail' + `?jwt=${jwt}`)
+        axios.get<string>('https://localhost:7047/api/User/GetUserEmail' + `?jwt=${jwt}`)
         .then(res => {
         console.log(res.data);
         setUserEmail(res.data)
@@ -68,16 +70,29 @@ export default function CreateProject()
         }
     }
 
-    function handleCreatingProject(){
-        
-    }
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setProjectData({
           ...projectData,
           [e.target.name]: e.target.value
         });
       };
+
+      projectData.userEmail = currEmail;
+      projectData.assignedUserEmails=selectedUsers.map(u => u.email);
+
+    function handleCreatingProject(){
+        axios.post('https://localhost:7047/api/Project/CreateProject', projectData)
+        .then(res=>{
+            console.log(res);
+            setIsOpen(false);
+            window.location.replace(window.location.pathname);
+        })
+        .catch(err=>{
+            console.error(err);
+            setIsOpen(false);
+            window.location.replace(window.location.pathname);
+        });
+    }
 
     if(currEmail == '' || users.length == 0)
     {
@@ -96,9 +111,8 @@ export default function CreateProject()
             </label>
             <label>
                 description:
-                <input type="text" name="description" value={projectData.name} onChange={handleChange} />
+                <input type="text" name="description" value={projectData.description} onChange={handleChange} />
             </label>
-            <input type="hidden" name="userEmail" value={currEmail} />
             <input type="hidden" name="assignedUserEmails" value={selectedUsers.map(u => u.email)} />
 
                 {users.map(user => (

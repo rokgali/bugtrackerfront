@@ -28,7 +28,7 @@ export default function LogIn(props: LoginProps)
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        await axios.post('https://localhost:7047/api/User/login', formData)
+        await axios.post('https://localhost:7047/api/User/Login', formData)
         .then(res => {
           console.log(res.data);
           const token: string = res.data;

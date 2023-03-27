@@ -30,7 +30,7 @@ export default function Register()
 
       const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        axios.post('https://localhost:7047/api/User/register', formData)
+        axios.post('https://localhost:7047/api/User/RegisterUser', formData)
         .then(res => {
           console.log(res.data);
           navigate('/login');
