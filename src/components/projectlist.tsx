@@ -19,26 +19,23 @@ export default function ProjectList()
 {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
-    const [projectUsers, setProjectUsers] = useState<{ [projectId: string]:void | User[]}>({});
 
     useEffect(() => {
         axios.post<Project[]>('https://localhost:7047/api/Project/GetProjectData')
           .then(response => {
             const projects = response.data;
-            setProjects(projects);
             const fetchAssignedUsersPromises = projects.map(project =>
             axios.post<User[]>('https://localhost:7047/api/Project/GetAssignedUsers?projectId=' + `${project.id}`)
                 .then(response => response.data)
             );
             Promise.all(fetchAssignedUsersPromises)
-              .then(assignedUsersLists => {
-                const projectsWithAssignedUsers = projects.reduce((acc, project, index) => {
-                  acc[project.id] = assignedUsersLists[index];
-                  return acc;
-                }, {} as { [projectId: string]: void | User[] });
-                setProjectUsers(projectsWithAssignedUsers);
-                setLoading(false);
-              })
+              .then(assignedUsers => {
+                setProjects(projects.map((project, index) => ({
+                    ...project,
+                    assignedUsers: assignedUsers[index]
+              })));
+              setLoading(false);
+            })
               .catch(error => {
                 console.error('Error fetching assigned users:', error);
                 setLoading(false);
@@ -49,8 +46,6 @@ export default function ProjectList()
             setLoading(false);
           });
       }, []);
-
-    console.log(projectUsers);
 
     if(loading )
     {
@@ -85,8 +80,8 @@ export default function ProjectList()
                 <td className="px-4 py-2">{project.description}</td>
                 <td className="px-4 py-2">
                   <ul>
-                    {projectUsers[project.id]?.map(user => (
-                      <li key={user.id}>{user.name}</li>
+                    {project.assignedUsers.map(user => (
+                        <li key={user.id}>{user.name}</li>
                     ))}
                   </ul>
                 </td>
