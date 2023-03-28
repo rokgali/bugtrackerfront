@@ -19,7 +19,6 @@ interface Project {
 
 export default function CreateProject()
 {
-    const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const [currEmail, setUserEmail] = useState('');
     const [users, setUsers] = useState<User[]>([]);
@@ -40,7 +39,7 @@ export default function CreateProject()
     }
 
     useEffect(() => {
-        axios.post<User[]>('https://localhost:7047/api/User/GetUserEmails')
+        axios.post<User[]>('https://localhost:7047/api/User/GetUserData')
         .then(res=> {
             console.log(res.data);
             setUsers(res.data)
