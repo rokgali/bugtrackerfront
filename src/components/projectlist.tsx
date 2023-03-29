@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface User {
     id: string,
@@ -19,6 +20,7 @@ export default function ProjectList()
 {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         axios.post<Project[]>('https://localhost:7047/api/Project/GetProjectData')
@@ -47,7 +49,12 @@ export default function ProjectList()
           });
       }, []);
 
-    if(loading )
+      function handleNavigation(projectId: string): void
+      {
+        navigate('/Project/' + `${projectId}`);
+      }
+
+    if(loading)
     {
         return (
             <div>Loading...</div>
@@ -86,7 +93,7 @@ export default function ProjectList()
                   </ul>
                 </td>
                 <td>
-                    <button type='button'>Go to project</button>
+                    <button type='button' onClick={() => handleNavigation(project.id)}>Go to project</button>
                 </td>
               </tr>
             ))}

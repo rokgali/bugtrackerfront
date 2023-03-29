@@ -7,6 +7,7 @@ import Error from './error';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import ProtectedRoute from './components/protectedroute';
+import Project from './components/project';
 
 
 function App() {
@@ -37,7 +38,7 @@ function App() {
     setAuthenticated(true);
   }
   {console.log(authenticated)}
-  if(isLoading || authenticated == null)
+  if(isLoading || authenticated === null)
   {
     return (
       <div>Loading...</div>
@@ -48,6 +49,7 @@ function App() {
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<LogIn authenticate={authenticate} />} />
+        <Route path="/Project/:id" element={<ProtectedRoute isAuthenticated={authenticated} authenticationPath='/login' outlet={<Project />} />} />
         <Route path="*" element={<Error />} />
         <Route path="/" element={<ProtectedRoute isAuthenticated={authenticated} authenticationPath='/login' outlet={<Dashboard />} />} />
       </Routes>
