@@ -23,6 +23,7 @@ export default function CreateProject()
     const [currEmail, setUserEmail] = useState('');
     const [users, setUsers] = useState<User[]>([]);
     const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [projectData, setProjectData] = useState<Project>({
         name:'',
         description:'',
@@ -49,6 +50,7 @@ export default function CreateProject()
         .then(res => {
         console.log(res.data);
         setUserEmail(res.data)
+        setIsLoading(false);
         });
     }, []);
 
@@ -93,7 +95,7 @@ export default function CreateProject()
         });
     }
 
-    if(currEmail == '' || users.length == 0)
+    if(isLoading)
     {
         return (
             <div>Loading...</div>
