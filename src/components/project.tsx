@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import CustomModal from "./modal";
 import CreateTicket from "./createticket";
 import TicketList from "./ticketlist";
+import {v4 as uuidv4} from 'uuid';
 
 interface User {
     id: string,
@@ -20,6 +21,7 @@ interface TransferDTO{
 
 export default function Project()
 {
+    const uuid = uuidv4();
     const [idValidity, setIdValidity] = useState(false);
     const [isLoading, setLoading] = useState(true);
     const { id } = useParams();
@@ -94,7 +96,6 @@ export default function Project()
         }
     }
 
-    // something wrong with data transfer
     useEffect(() => {
         setTransferdata({
             ProjectId: id,
@@ -111,13 +112,15 @@ export default function Project()
             {
                 location.reload();
             }
+            handleModalClosed();
             })
-        .catch(err=>console.error(err));
+        .catch(err=>{console.error(err);
+        handleModalClosed();});
     }
 
     const handleModalOpen = () => { setModalOpen(true) }
 
-    const handleModalClosed = () => {setModalOpen(false)}
+    const handleModalClosed = () => { setProjectUsers([]); setUserIds([]); setModalOpen(false)}
 
     console.log(projectUsers);
 
@@ -146,7 +149,7 @@ export default function Project()
                 checked={projectUsers.some(selectedUser => selectedUser.id === user.id)}
                 onChange={() => handleUserSelection(user)}></input></label></p>
             ))}
-            <button onClick={handleModalOpen} type="submit">Enter changes</button>
+            <button type="submit">Enter changes</button>
             </form>
         </CustomModal>
         </div>

@@ -1,5 +1,25 @@
 import { useEffect, useState } from "react";
 import CustomModal from "./modal";
+import axios from 'axios';
+import {v4 as uuidv4} from 'uuid';  
+
+enum Priority {
+    high,
+    medium,
+    low
+}
+
+enum Type {
+    bug,
+    feature,
+    other
+}
+
+enum Status {
+    unadressed,
+    in_progress,
+    resolved
+}
 
 interface TicketDTO {
     name: string,
@@ -33,11 +53,11 @@ export default function CreateTicket(props: ticketProps)
     const [transferData, setTransferData] = useState<TicketDTO>({
         name: '',
         description: '',
-        priority: 0,
-        type: 0,
-        status: 0,
+        priority: Priority.low,
+        type: Type.other,
+        status: Status.unadressed,
         authorEmail: props.userEmail,
-        userIds: [],
+        userIds: selectedUserIds,
         projectId: props.projectId
     });
 
@@ -54,15 +74,35 @@ export default function CreateTicket(props: ticketProps)
             newSelectedUserIds.splice(findId, 1);
             setSelectedUserIds(newSelectedUserIds);
         }
+        
     }
 
-    const handleSubmit= () => {
+    useEffect(() => {
+        setTransferData({...transferData, userIds: selectedUserIds});
+        console.log(transferData);
+    }, [selectedUserIds])
 
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        setTransferData({...transferData, [e.target.name]: e.target.value });
+        console.log(e.target.value);
+        console.log(transferData);
+    }
+
+    function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        axios.post('https://localhost:7047/api/Ticket/CreateTicket', transferData)
+        .then(res =>{ console.log(res);
+            console.log(transferData);
+        handleModalClosed();
+    })
+        .catch(err => {console.log(err);
+        setModalOpen(false);
+        });
     }
 
     const handleModalOpen = () => { setModalOpen(true) }
 
-    const handleModalClosed = () => {setModalOpen(false)}
+    const handleModalClosed = () => { setSelectedUserIds([]); setModalOpen(false)}
 
 
     return (
@@ -72,23 +112,38 @@ export default function CreateTicket(props: ticketProps)
                 <form onSubmit={handleSubmit}>
                     <div className="text-3xl">Create new ticket</div>
                     <div>
-                        <label>Title<input type="text" /></label>
+                        <label>Title<input type="text" name="name" onChange={handleInputChange} /></label>
                     </div>
                     <div>
-                        <label>Description<input type="text" /></label>
+                        <label>Description<input type="text" name="description" onChange={handleInputChange} /></label>
                     </div>
                     <div>
-                        <label>Priority<input type="text" /></label>
-                    </div>
-                    <div>
-                        <label>Type<input type="text" /></label>
+                        <div>
+                            <label>Priority
+                                <select name="priority" value={transferData.priority} onChange={handleInputChange}>
+                                    <option value={Priority.low}>Low</option>
+                                    <option value={Priority.medium}>Medium</option>
+                                    <option value={Priority.high}>High</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div>
+                            <label>Type
+                            <select name="type" value={transferData.type} onChange={handleInputChange}>
+                                    <option value={Type.bug}>Bug</option>
+                                    <option value={Type.feature}>Feature</option>
+                                    <option value={Type.other}>Other</option>
+                                </select>
+                            </label>
+                        </div>
                     </div>
                     
                     {props.users.map(user=>(
                         <div><label key={user.id}>{user.id} {user.name} {user.surname} {user.email}
                         <input onChange={() => handleChange(user)} type="checkbox"></input></label></div>
                     ))}
-                    <button type="submit" onClick={handleModalClosed}>Submit</button>
+
+                    <button type="submit">Submit</button>
                 </form>
                 <div>
                     <div className="text-3xl">Selected users ids</div>

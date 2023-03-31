@@ -36,7 +36,7 @@ export default function CreateProject()
     }
 
     const handleModalClosed = () => {
-        setIsOpen(false);
+        setSelectedUsers([]); setIsOpen(false);
     }
 
     useEffect(() => {
@@ -85,12 +85,12 @@ export default function CreateProject()
         axios.post('https://localhost:7047/api/Project/CreateProject', projectData)
         .then(res=>{
             console.log(res);
-            setIsOpen(false);
+            handleModalClosed();
             window.location.replace(window.location.pathname);
         })
         .catch(err=>{
             console.error(err);
-            setIsOpen(false);
+            handleModalClosed();
             window.location.replace(window.location.pathname);
         });
     }
