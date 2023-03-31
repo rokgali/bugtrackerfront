@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import CustomModal from "./modal";
 import CreateTicket from "./createticket";
 import TicketList from "./ticketlist";
-import {v4 as uuidv4} from 'uuid';
 
 interface User {
     id: string,
@@ -21,7 +20,6 @@ interface TransferDTO{
 
 export default function Project()
 {
-    const uuid = uuidv4();
     const [idValidity, setIdValidity] = useState(false);
     const [isLoading, setLoading] = useState(true);
     const { id } = useParams();
@@ -38,7 +36,7 @@ export default function Project()
 
     // checking if id is valid
     useEffect(() =>{
-        axios.get<boolean>('https://localhost:7047/api/Project/IsIdValid?projectId=' + `${id}`)
+        axios.get<boolean>(`https://localhost:7047/api/Project/IsIdValid?projectId=${id}`)
         .then( res => {
             setIdValidity(res.data);
             console.log(res.data);
@@ -157,8 +155,9 @@ export default function Project()
             <CreateTicket userEmail={userEmail} projectId={id} users={projectUsers} userIds={userIds} />
         </div>
         <div>
-            <TicketList />
+            <TicketList projectId={id} />
         </div>
+        
     </div>
     </>);
 }

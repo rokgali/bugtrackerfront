@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface User {
@@ -27,7 +27,7 @@ export default function ProjectList()
           .then(response => {
             const projects = response.data;
             const fetchAssignedUsersPromises = projects.map(project =>
-            axios.post<User[]>('https://localhost:7047/api/Project/GetAssignedUsers?projectId=' + `${project.id}`)
+            axios.post<User[]>(`https://localhost:7047/api/Project/GetAssignedUsers?projectId=${project.id}`)
                 .then(response => response.data)
             );
             Promise.all(fetchAssignedUsersPromises)
@@ -51,7 +51,7 @@ export default function ProjectList()
 
       function handleNavigation(projectId: string): void
       {
-        navigate('/Project/' + `${projectId}`);
+        navigate(`/Project/${projectId}`);
       }
 
     if(loading)
@@ -60,7 +60,7 @@ export default function ProjectList()
             <div>Loading...</div>
         )
     }
-    if(projects.length == 0)
+    if(projects.length === 0)
     {
         return (
             <>

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import CustomModal from "./modal";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 type User = {
     id: string,
