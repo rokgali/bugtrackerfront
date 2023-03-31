@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import CustomModal from "./modal";
-import axios from 'axios';
-import {v4 as uuidv4} from 'uuid';  
+import axios from 'axios';  
 
 enum Priority {
     high,
@@ -149,7 +148,7 @@ export default function CreateTicket(props: ticketProps)
                     <div className="text-3xl">Selected users ids</div>
                     {selectedUserIds.map(id=>(
                         <div key={id}>{id}</div>
-                    ))}
+                    ))} 
                 </div>
             </CustomModal>
         </div>
