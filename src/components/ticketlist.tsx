@@ -27,14 +27,14 @@ interface UserData {
 }
 
 interface TicketData {
-    Id: string,
-    Title: string,
-    Description: string,
-    Priority: Priority,
-    Type: Type,
-    Status: Status,
-    AuthorId: string
-    AssignedUsers: UserData[]
+    id: string,
+    title: string,
+    description: string,
+    priority: Priority,
+    type: Type,
+    status: Status,
+    authorId: string,
+    assignedUsers?: UserData[]
 }
 
 interface TicketListProps {
@@ -44,31 +44,44 @@ interface TicketListProps {
 export default function TicketList(props: TicketListProps)
 {
     const [projectTickets, setProjectTickets] = useState<TicketData[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        axios.get(`https://localhost:7047/api/Project/GetAssignedTickets?projectId=${props.projectId}`)
+        axios.get<TicketData[]>(`https://localhost:7047/api/Project/GetAssignedTickets?projectId=${props.projectId}`)
         .then(res => {
             console.log(res.data);
-            setProjectTickets(res.data);
-            const tickets: TicketData[] = res.data;
-            if(tickets.length != 0)
-            {
+            const tickets = res.data;
                 const fetchAssignedUserPromises = tickets.map(ticket=>
-                axios.get<UserData[]>(`https://localhost:7047/api/Ticket/GetAssignedUsers?projectId=${ticket.Id}`)
-                .then(resp => console.log(resp.data)));
+                axios.get<UserData[]>(`https://localhost:7047/api/Ticket/GetAssignedUsers?ticketId=${ticket.id}`)
+                .then(resp => resp.data));
                 Promise.all(fetchAssignedUserPromises)
-                .then(assignedUsers => tickets.map((ticket, index) => ({
+                .then(assignedUsers => {
+                  setProjectTickets(tickets.map((ticket, index) => ({
                     ...ticket,
-                    AssignedUsers: assignedUsers[index]
-                })))
-                .catch(err=>console.error(err));
-            }
+                    assignedUsers: assignedUsers[index]
+                })));
+                console.log(assignedUsers);
+                setIsLoading(false);
+            })
+                .catch(err=>
+                    {console.error(err)
+                    setIsLoading(false);});
         })
-        .catch(err=>console.error(err));
+        .catch(err=>{console.error(err)
+        setIsLoading(false)});
     }, []);
 
+    console.log(projectTickets);
+
+    if(isLoading)
+    {
+        return (<>
+        Loading...
+        </>)
+    }
+
     return (<div className="p-4">
-    <table className="text-left w-40 border-collapse table-fixed">
+    <table className="text-left w-full border-collapse table-fixed">
       <thead className="bg-blue-600 text-white">
         <tr>
           <th className="px-4 py-2">Title</th>
@@ -80,16 +93,16 @@ export default function TicketList(props: TicketListProps)
         </tr>
       </thead>
       <tbody>
-        {projectTickets.map(ticket => (
-          <tr key={ticket.Id} className="border-b border-gray-200 hover:bg-gray-100">
-            <td className="px-4 py-2">{ticket.Title}</td>
-            <td className="px-4 py-2">{ticket.Description}</td>
-            <td className="px-4 py-2">{ticket.Type}</td>
-            <td className="px-4 py-2">{ticket.Priority}</td>
-            <td className="px-4 py-2">{ticket.Status}</td>
+        {projectTickets?.map((ticket, index) => (
+          <tr key={index} className="border-b border-gray-200 hover:bg-gray-100">
+            <td className="px-4 py-2">{ticket.title}</td>
+            <td className="px-4 py-2">{ticket.description}</td>
+            <td className="px-4 py-2">{ticket.type}</td>
+            <td className="px-4 py-2">{ticket.priority}</td>
+            <td className="px-4 py-2">{ticket.status}</td>
             <td className="px-4 py-2">
               <ul>
-                {ticket.AssignedUsers.map(user => (
+                {ticket.assignedUsers?.map(user => (
                     <li key={user.id}>{user.name}</li>
                 ))}
               </ul>

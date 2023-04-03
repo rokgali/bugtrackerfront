@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import CustomModal from "./modal";
 import CreateTicket from "./createticket";
 import TicketList from "./ticketlist";
+import { v4 as uuidv4 } from 'uuid';
 
 interface User {
     id: string,
@@ -136,14 +137,14 @@ export default function Project()
         <div>
             <div className="text-3xl">Team members</div>
             {projectUsers.map(user => 
-            <div key={user.id}>{user.name} {user.surname} {user.email}</div>
+            <div key={uuidv4()}>{user.name} {user.surname} {user.email}</div>
             )}
         <button type="button" className="rounded-md shadow-md bg-orange-700 py-1 px-1" onClick={handleModalOpen}>Edit team members</button>
         <CustomModal isOpen={modalOpen} onRequestClose={handleModalClosed}>
             <form onSubmit={handleSubmit}>
             <div className="text-3xl">Edit team</div>
             {userData.map(user=>(
-                <p><label key={user.id}>{user.name} {user.surname}<input type="checkbox"
+                <p><label key={uuidv4()}>{user.name} {user.surname}<input type="checkbox"
                 checked={projectUsers.some(selectedUser => selectedUser.id === user.id)}
                 onChange={() => handleUserSelection(user)}></input></label></p>
             ))}
@@ -157,7 +158,6 @@ export default function Project()
         <div>
             <TicketList projectId={id} />
         </div>
-        
     </div>
     </>);
 }

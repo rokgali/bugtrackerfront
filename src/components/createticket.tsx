@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import CustomModal from "./modal";
 import axios from 'axios';  
+import { v4 as uuidv4 } from 'uuid';
 
 enum Priority {
     high,
@@ -103,7 +104,6 @@ export default function CreateTicket(props: ticketProps)
 
     const handleModalClosed = () => { setSelectedUserIds([]); setModalOpen(false)}
 
-
     return (
         <div>
             <button type="button" className="bg-blue-600 rounded-md p-1" onClick={handleModalOpen}>Add new ticket</button>
@@ -147,7 +147,7 @@ export default function CreateTicket(props: ticketProps)
                 <div>
                     <div className="text-3xl">Selected users ids</div>
                     {selectedUserIds.map(id=>(
-                        <div key={id}>{id}</div>
+                        <div key={uuidv4()}>{id}</div>
                     ))} 
                 </div>
             </CustomModal>
