@@ -5,6 +5,7 @@ import CustomModal from "./modal";
 import CreateTicket from "./createticket";
 import TicketList from "./ticketlist";
 import { v4 as uuidv4 } from 'uuid';
+import TicketData from "./ticketdata";
 
 interface User {
     id: string,
@@ -13,9 +14,39 @@ interface User {
     surname: string
 }
 
+
 interface TransferDTO{
     ProjectId: string | undefined,
     UsersIds: string[]
+}
+
+enum Priority {
+    high,
+    medium,
+    low
+}
+
+enum Type {
+    bug,
+    feature,
+    other
+}
+
+enum Status {
+    unadressed,
+    in_progress,
+    resolved
+}
+
+interface TicketData {
+    id: string,
+    title: string,
+    description: string,
+    priority: Priority,
+    type: Type,
+    status: Status,
+    authorId: string,
+    assignedUsers?: User[]
 }
 
 
@@ -33,6 +64,7 @@ export default function Project()
         UsersIds: []
     });
     const [userEmail, setUserEmail] = useState<string>();
+    const [selectedTicket, setSelectedTicket] = useState<TicketData | null>(null);
     
 
     // checking if id is valid
@@ -121,6 +153,10 @@ export default function Project()
 
     const handleModalClosed = () => { setProjectUsers([]); setUserIds([]); setModalOpen(false)}
 
+    const handleTicketClick = (ticket: TicketData) => {
+        setSelectedTicket(ticket);  
+    }
+
     console.log(projectUsers);
 
     if(isLoading)
@@ -144,7 +180,7 @@ export default function Project()
             <form onSubmit={handleSubmit}>
             <div className="text-3xl">Edit team</div>
             {userData.map(user=>(
-                <p><label key={uuidv4()}>{user.name} {user.surname}<input type="checkbox"
+                <p><label key={user.id}>{user.name} {user.surname}<input type="checkbox"
                 checked={projectUsers.some(selectedUser => selectedUser.id === user.id)}
                 onChange={() => handleUserSelection(user)}></input></label></p>
             ))}
@@ -156,7 +192,12 @@ export default function Project()
             <CreateTicket userEmail={userEmail} projectId={id} users={projectUsers} userIds={userIds} />
         </div>
         <div>
-            <TicketList projectId={id} />
+            <TicketList selectedTicket={selectedTicket} 
+                        onTicketClick={handleTicketClick} 
+                        projectId={id} />
+        </div>
+        <div>
+            {selectedTicket && <TicketData selectedTicket={selectedTicket} />}
         </div>
     </div>
     </>);

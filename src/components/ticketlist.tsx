@@ -39,6 +39,8 @@ interface TicketData {
 
 interface TicketListProps {
     projectId: string | undefined
+    selectedTicket: TicketData | null;
+    onTicketClick: (ticket: TicketData) => void
 }
 
 export default function TicketList(props: TicketListProps)
@@ -73,6 +75,8 @@ export default function TicketList(props: TicketListProps)
 
     console.log(projectTickets);
 
+
+
     if(isLoading)
     {
         return (<>
@@ -93,21 +97,25 @@ export default function TicketList(props: TicketListProps)
         </tr>
       </thead>
       <tbody>
-        {projectTickets?.map((ticket, index) => (
-          <tr key={index} className="border-b border-gray-200 hover:bg-gray-100">
+        {projectTickets?.map(ticket => (
+          <tr 
+            key={ticket.id}
+            className={`${
+              props.selectedTicket?.id === ticket.id ? "bg-blue-100" : ""
+            } hover:bg-blue-100`}
+            onClick={() => props.onTicketClick(ticket)}
+          >
             <td className="px-4 py-2">{ticket.title}</td>
             <td className="px-4 py-2">{ticket.description}</td>
-            <td className="px-4 py-2">{ticket.type}</td>
-            <td className="px-4 py-2">{ticket.priority}</td>
-            <td className="px-4 py-2">{ticket.status}</td>
-            <td className="px-4 py-2">
+            <td className="px-4 py-2">{Type[ticket.type]}</td>
+            <td className="px-4 py-2">{Priority[ticket.priority]}</td>
+            <td className="px-4 py-2">{ticket.status == 2 ? "in progress" : Status[ticket.status]}</td>
+            <td colSpan={2} className="px-4 py-2">
               <ul>
-                {ticket.assignedUsers?.map(user => (
-                    <li key={user.id}>{user.name}</li>
+                {ticket.assignedUsers?.map((user, index) => (
+                    <li key={index}>{user.name}</li>
                 ))}
               </ul>
-            </td>
-            <td>
             </td>
           </tr>
         ))}
