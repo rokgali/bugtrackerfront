@@ -197,7 +197,7 @@ export default function Project()
                         projectId={id} />
         </div>
         <div>
-            {selectedTicket && <TicketData selectedTicket={selectedTicket} />}
+            {selectedTicket && <TicketData userEmail={userEmail} selectedTicket={selectedTicket} />}
         </div>
     </div>
     </>);
