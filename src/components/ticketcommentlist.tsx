@@ -22,6 +22,7 @@ export default function TicketCommentList(props: CommentProps)
     const [ticketCommentData, setTicketCommentData] = useState<TicketCommentData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
+    console.log(props.ticketId);
     useEffect(() => {
         axios.get(`https://localhost:7047/api/Ticket/GetComments?ticketId=${props.ticketId}`)
         .then(res => {
@@ -56,7 +57,7 @@ export default function TicketCommentList(props: CommentProps)
     return (<div>
         {ticketCommentData.map(comment => (
             <div key={comment.id}>
-                <div>Author: {comment.name} {comment.surname}</div>
+                <div>Author: {comment.name} {comment.surname} {comment.email}</div>
                 <div>Posted on: {comment.dateTime.toLocaleString()}</div>
                 <div>{comment.comment}</div>
             </div>

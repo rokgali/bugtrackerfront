@@ -54,21 +54,25 @@ export default function TicketData(props: TicketDataProps)
     const [isPosted, setIsPosted] = useState(false);
     const [commentData, setCommentData] = useState<CommentData>({
         comment: '',
-        authorEmail: props.userEmail,
-        ticketId: props.selectedTicket.id
+        authorEmail: '',
+        ticketId: ''
     });
+
+    console.log(props.userEmail);
+    console.log(props.selectedTicket.id);
 
     const resetPosted = () => {
         setIsPosted(false);
     }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setCommentData({...commentData, [e.target.name]: e.target.value});
+        setCommentData({comment: e.target.value, authorEmail: props.userEmail, ticketId: props.selectedTicket.id});
     }
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        console.log(commentData);
         axios.post("https://localhost:7047/api/Ticket/WriteComment", commentData)
         .then(resp =>{ console.log(resp.data);
         setCommentData({...commentData, comment: ''});
