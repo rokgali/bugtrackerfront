@@ -50,7 +50,7 @@ interface TicketData {
 }
 
 
-export default function Project()
+export default function EditProject()
 {
     const [idValidity, setIdValidity] = useState(false);
     const [isLoading, setLoading] = useState(true);
@@ -179,8 +179,8 @@ export default function Project()
         <CustomModal isOpen={modalOpen} onRequestClose={handleModalClosed}>
             <form onSubmit={handleSubmit}>
             <div className="text-3xl">Edit team</div>
-            {userData.map(user=>(
-                <p><label key={user.id}>{user.name} {user.surname}<input type="checkbox"
+            {userData.map((user, index)=>(
+                <p><label key={index}>{user.name} {user.surname}<input type="checkbox"
                 checked={projectUsers.some(selectedUser => selectedUser.id === user.id)}
                 onChange={() => handleUserSelection(user)}></input></label></p>
             ))}

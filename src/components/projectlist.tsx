@@ -51,7 +51,7 @@ export default function ProjectList()
 
       function handleNavigation(projectId: string): void
       {
-        navigate(`/Project/${projectId}`);
+        navigate(`/editproject/${projectId}`);
       }
 
     if(loading)

@@ -7,7 +7,7 @@ import Error from './pages/error';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import ProtectedRoute from './components/protectedroute';
-import Project from './pages/project';
+import EditProject from './pages/editproject';
 import CreatedTickets from './pages/createdtickets';
 
 
@@ -50,7 +50,7 @@ function App() {
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<LogIn authenticate={authenticate} />} />
-        <Route path="/Project/:id" element={<ProtectedRoute isAuthenticated={authenticated} authenticationPath='/login' outlet={<Project />} />} />
+        <Route path="/editproject/:id" element={<ProtectedRoute isAuthenticated={authenticated} authenticationPath='/login' outlet={<EditProject />} />} />
         <Route path="*" element={<Error />} />
         <Route path="/" element={<ProtectedRoute isAuthenticated={authenticated} authenticationPath='/login' outlet={<Dashboard />} />} />
         <Route path="/createdtickets" element={<ProtectedRoute isAuthenticated={authenticated} authenticationPath='/login' outlet={<CreatedTickets />} />}/>

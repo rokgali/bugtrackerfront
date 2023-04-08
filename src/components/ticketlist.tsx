@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
+import CustomModal from "./modal";
+import TicketEdit from "./ticketedit";
 
 enum Priority {
     high,
@@ -47,6 +49,7 @@ export default function TicketList(props: TicketListProps)
 {
     const [projectTickets, setProjectTickets] = useState<TicketData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
         axios.get<TicketData[]>(`https://localhost:7047/api/Project/GetAssignedTickets?projectId=${props.projectId}`)
@@ -72,6 +75,14 @@ export default function TicketList(props: TicketListProps)
         .catch(err=>{console.error(err)
         setIsLoading(false)});
     }, []);
+
+    const handleModalOpen = () => {
+      setIsOpen(true);
+    }
+
+    const handleModalClosed = () => {
+      setIsOpen(false);
+    }
 
     console.log(projectTickets);
 
@@ -109,14 +120,18 @@ export default function TicketList(props: TicketListProps)
             <td className="px-4 py-2">{ticket.description}</td>
             <td className="px-4 py-2">{Type[ticket.type]}</td>
             <td className="px-4 py-2">{Priority[ticket.priority]}</td>
-            <td className="px-4 py-2">{ticket.status == 2 ? "in progress" : Status[ticket.status]}</td>
-            <td colSpan={2} className="px-4 py-2">
+            <td className="px-4 py-2">{ticket.status == 1 ? "in progress" : Status[ticket.status]}</td>
+            <td className="px-4 py-2">
               <ul>
                 {ticket.assignedUsers?.map((user, index) => (
                     <li key={index}>{user.name}</li>
                 ))}
               </ul>
             </td>
+            <td><button onClick={handleModalOpen}>Edit</button></td>
+            <CustomModal isOpen={isOpen} onRequestClose={handleModalClosed}>
+              <TicketEdit closeModal={handleModalClosed}/>
+            </CustomModal>
           </tr>
         ))}
       </tbody>

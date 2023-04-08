@@ -1,4 +1,19 @@
-export default function TicketEdit()
+interface TicketEditProps {
+    closeModal: () => void
+}
+
+export default function TicketEdit(props: TicketEditProps)
 {
-    return (<>This is a component for editing ticket</>);
+    const handleSubmit = () => {
+
+    }
+
+    return (
+        <div>
+            <form onSubmit={handleSubmit}>
+                <div>List of tickets</div>
+                <button type="submit" onClick={props.closeModal}>submit</button>
+            </form>
+        </div>
+    );
 }
