@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import CustomModal from "./modal";
 import axios from "axios";
+import { EventEmitter } from "eventemitter3";
 
 type User = {
     id: string,

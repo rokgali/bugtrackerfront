@@ -6,6 +6,7 @@ import CreateTicket from "../components/createticket";
 import TicketList from "../components/ticketlist";
 import { v4 as uuidv4 } from 'uuid';
 import TicketData from "../components/ticketdata";
+import EventEmitter from "eventemitter3";
 
 interface User {
     id: string,
@@ -49,9 +50,9 @@ interface TicketData {
     assignedUsers?: User[]
 }
 
-
 export default function EditProject()
 {
+    const [ticketList, setTicketList] = useState<TicketData[]>([]);
     const [idValidity, setIdValidity] = useState(false);
     const [isLoading, setLoading] = useState(true);
     const { id } = useParams();
@@ -65,7 +66,10 @@ export default function EditProject()
     });
     const [userEmail, setUserEmail] = useState<string>();
     const [selectedTicket, setSelectedTicket] = useState<TicketData | null>(null);
-    
+
+    const handleSettingTicketList = (ticketData: TicketData[]) => {
+        setTicketList(ticketData);
+    }
 
     // checking if id is valid
     useEffect(() =>{
@@ -141,7 +145,7 @@ export default function EditProject()
             console.log(res.data)
             if(res.data === 'Success')
             {
-                location.reload();
+                window.location.reload();
             }
             handleModalClosed();
             })
@@ -189,12 +193,14 @@ export default function EditProject()
         </CustomModal>
         </div>
         <div>
-            <CreateTicket userEmail={userEmail} projectId={id} users={projectUsers} userIds={userIds} />
+            <CreateTicket handleSettingTicketList={handleSettingTicketList} userEmail={userEmail} projectId={id} users={projectUsers} userIds={userIds} />
         </div>
         <div>
             <TicketList selectedTicket={selectedTicket} 
                         onTicketClick={handleTicketClick} 
-                        projectId={id} />
+                        projectId={id}
+                        handleSettingTicketList={handleSettingTicketList}
+                        ticketList={ticketList} />
         </div>
         <div>
             {selectedTicket && <TicketData userEmail={userEmail} selectedTicket={selectedTicket} />}

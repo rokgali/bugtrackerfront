@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from 'axios';
 import CustomModal from "./modal";
 import TicketEdit from "./ticketedit";
+import EventEmitter from "eventemitter3";
 
 enum Priority {
     high,
@@ -41,18 +42,19 @@ interface TicketData {
 
 interface TicketListProps {
     projectId: string | undefined
-    selectedTicket: TicketData | null;
+    selectedTicket: TicketData | null
     onTicketClick: (ticket: TicketData) => void
+    handleSettingTicketList: (ticketList: TicketData[]) => void
+    ticketList: TicketData[]
 }
 
 export default function TicketList(props: TicketListProps)
 {
-    const [projectTickets, setProjectTickets] = useState<TicketData[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isOpen, setIsOpen] = useState(false);
 
-    useEffect(() => {
-        axios.get<TicketData[]>(`https://localhost:7047/api/Project/GetAssignedTickets?projectId=${props.projectId}`)
+    const handleTicketList = () => {
+      axios.get<TicketData[]>(`https://localhost:7047/api/Project/GetAssignedTickets?projectId=${props.projectId}`)
         .then(res => {
             console.log(res.data);
             const tickets = res.data;
@@ -61,7 +63,7 @@ export default function TicketList(props: TicketListProps)
                 .then(resp => resp.data));
                 Promise.all(fetchAssignedUserPromises)
                 .then(assignedUsers => {
-                  setProjectTickets(tickets.map((ticket, index) => ({
+                  props.handleSettingTicketList(tickets.map((ticket, index) => ({
                     ...ticket,
                     assignedUsers: assignedUsers[index]
                 })));
@@ -74,6 +76,10 @@ export default function TicketList(props: TicketListProps)
         })
         .catch(err=>{console.error(err)
         setIsLoading(false)});
+    }
+
+    useEffect(() => {
+      handleTicketList();
     }, []);
 
     const handleModalOpen = () => {
@@ -84,7 +90,7 @@ export default function TicketList(props: TicketListProps)
       setIsOpen(false);
     }
 
-    console.log(projectTickets);
+    console.log(props.ticketList);
 
 
 
@@ -108,7 +114,7 @@ export default function TicketList(props: TicketListProps)
         </tr>
       </thead>
       <tbody>
-        {projectTickets?.map(ticket => (
+        {props.ticketList?.map(ticket => (
           <tr 
             key={ticket.id}
             className={`${

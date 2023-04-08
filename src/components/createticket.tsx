@@ -40,14 +40,27 @@ interface User {
 }
 
 interface ticketProps {
-    userEmail: string | undefined
+    userEmail: string | undefined,
     projectId: string | undefined,
     users: User[],
-    userIds: string[]
+    userIds: string[],
+    handleSettingTicketList: (ticketList: TicketData[]) => void
+}
+
+interface TicketData {
+    id: string,
+    title: string,
+    description: string,
+    priority: Priority,
+    type: Type,
+    status: Status,
+    authorId: string,
+    assignedUsers?: User[]
 }
 
 export default function CreateTicket(props: ticketProps)
 {
+    
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
     const [transferData, setTransferData] = useState<TicketDTO>({
@@ -88,11 +101,34 @@ export default function CreateTicket(props: ticketProps)
         console.log(transferData);
     }
 
+    const handleTicketList = () => {
+        axios.get<TicketData[]>(`https://localhost:7047/api/Project/GetAssignedTickets?projectId=${props.projectId}`)
+          .then(res => {
+              console.log(res.data);
+              const tickets = res.data;
+                  const fetchAssignedUserPromises = tickets.map(ticket=>
+                  axios.get<User[]>(`https://localhost:7047/api/Ticket/GetAssignedUsers?ticketId=${ticket.id}`)
+                  .then(resp => resp.data));
+                  Promise.all(fetchAssignedUserPromises)
+                  .then(assignedUsers => {
+                    props.handleSettingTicketList(tickets.map((ticket, index) => ({
+                      ...ticket,
+                      assignedUsers: assignedUsers[index]
+                  })));
+                  console.log(assignedUsers);
+              })
+                  .catch(err=>
+                      {console.error(err)});
+          })
+          .catch(err=>{console.error(err)});
+      }
+
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         axios.post('https://localhost:7047/api/Ticket/CreateTicket', transferData)
         .then(res =>{ console.log(res);
             console.log(transferData);
+            handleTicketList();
         handleModalClosed();
     })
         .catch(err => {console.log(err);

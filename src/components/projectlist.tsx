@@ -1,4 +1,5 @@
 import axios from 'axios';
+import EventEmitter from 'events';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -21,32 +22,37 @@ export default function ProjectList()
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    const [isChanged, setIsChanged] = useState(false);
+
+    const handleProjectList = () => {
+      axios.post<Project[]>('https://localhost:7047/api/Project/GetProjectData')
+        .then(response => {
+          const projects = response.data;
+          const fetchAssignedUsersPromises = projects.map(project =>
+          axios.post<User[]>(`https://localhost:7047/api/Project/GetAssignedUsers?projectId=${project.id}`)
+              .then(response => response.data)
+          );
+          Promise.all(fetchAssignedUsersPromises)
+            .then(assignedUsers => {
+              setProjects(projects.map((project, index) => ({
+                  ...project,
+                  assignedUsers: assignedUsers[index]
+            })));
+            setLoading(false);
+          })
+            .catch(error => {
+              console.error('Error fetching assigned users:', error);
+              setLoading(false);
+            });
+        })
+        .catch(error => {
+          console.error('Error fetching projects:', error);
+          setLoading(false);
+        });
+    }
 
     useEffect(() => {
-        axios.post<Project[]>('https://localhost:7047/api/Project/GetProjectData')
-          .then(response => {
-            const projects = response.data;
-            const fetchAssignedUsersPromises = projects.map(project =>
-            axios.post<User[]>(`https://localhost:7047/api/Project/GetAssignedUsers?projectId=${project.id}`)
-                .then(response => response.data)
-            );
-            Promise.all(fetchAssignedUsersPromises)
-              .then(assignedUsers => {
-                setProjects(projects.map((project, index) => ({
-                    ...project,
-                    assignedUsers: assignedUsers[index]
-              })));
-              setLoading(false);
-            })
-              .catch(error => {
-                console.error('Error fetching assigned users:', error);
-                setLoading(false);
-              });
-          })
-          .catch(error => {
-            console.error('Error fetching projects:', error);
-            setLoading(false);
-          });
+      handleProjectList();
       }, []);
 
       function handleNavigation(projectId: string): void
