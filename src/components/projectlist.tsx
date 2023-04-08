@@ -17,13 +17,16 @@ interface Project {
         assignedUsers: User[]
 }
 
-export default function ProjectList()
+interface ProjectListProps {
+  handleSettingProjectList: (projectList: Project[]) => void
+  projectList: Project[]
+}
+
+export default function ProjectList(props: ProjectListProps)
 {
-    const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
-    const [isChanged, setIsChanged] = useState(false);
-
+    
     const handleProjectList = () => {
       axios.post<Project[]>('https://localhost:7047/api/Project/GetProjectData')
         .then(response => {
@@ -34,7 +37,7 @@ export default function ProjectList()
           );
           Promise.all(fetchAssignedUsersPromises)
             .then(assignedUsers => {
-              setProjects(projects.map((project, index) => ({
+              props.handleSettingProjectList(projects.map((project, index) => ({
                   ...project,
                   assignedUsers: assignedUsers[index]
             })));
@@ -66,7 +69,7 @@ export default function ProjectList()
             <div>Loading...</div>
         )
     }
-    if(projects.length === 0)
+    if(props.projectList.length === 0)
     {
         return (
             <>
@@ -87,7 +90,7 @@ export default function ProjectList()
             </tr>
           </thead>
           <tbody>
-            {projects.map(project => (
+            {props.projectList.map(project => (
               <tr key={project.id} className="border-b border-gray-200 hover:bg-gray-100">
                 <td className="px-4 py-2">{project.name}</td>
                 <td className="px-4 py-2">{project.description}</td>

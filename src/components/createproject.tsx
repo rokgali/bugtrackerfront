@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import CustomModal from "./modal";
 import axios from "axios";
-import { EventEmitter } from "eventemitter3";
 
 type User = {
     id: string,
@@ -17,7 +16,18 @@ interface Project {
     assignedUserEmails: string[]
 }
 
-export default function CreateProject()
+interface FetchProject {
+    id: string,
+    name: string
+    description: string,
+    assignedUsers: User[]
+}
+
+interface CreateProjectProps {
+    handleSettingProjectList: (projects: FetchProject[]) => void
+}
+
+export default function CreateProject(props: CreateProjectProps)
 {
     const [isOpen, setIsOpen] = useState(false);
     const [currEmail, setUserEmail] = useState('');
@@ -81,17 +91,40 @@ export default function CreateProject()
       projectData.userEmail = currEmail;
       projectData.assignedUserEmails=selectedUsers.map(u => u.email);
 
+      const handleProjectList = () => {
+        axios.post<FetchProject[]>('https://localhost:7047/api/Project/GetProjectData')
+          .then(response => {
+            const projects = response.data;
+            const fetchAssignedUsersPromises = projects.map(project =>
+            axios.post<User[]>(`https://localhost:7047/api/Project/GetAssignedUsers?projectId=${project.id}`)
+                .then(response => response.data)
+            );
+            Promise.all(fetchAssignedUsersPromises)
+              .then(assignedUsers => {
+                props.handleSettingProjectList(projects.map((project, index) => ({
+                    ...project,
+                    assignedUsers: assignedUsers[index]
+              })));
+            })
+              .catch(error => {
+                console.error('Error fetching assigned users:', error);
+              });
+          })
+          .catch(error => {
+            console.error('Error fetching projects:', error);
+          });
+      }
+
     function handleCreatingProject(){
         axios.post('https://localhost:7047/api/Project/CreateProject', projectData)
         .then(res=>{
             console.log(res);
+            handleProjectList();
             handleModalClosed();
-            window.location.replace(window.location.pathname);
         })
         .catch(err=>{
             console.error(err);
             handleModalClosed();
-            window.location.replace(window.location.pathname);
         });
     }
 
