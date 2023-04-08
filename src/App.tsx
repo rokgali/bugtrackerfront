@@ -1,13 +1,14 @@
 import {Routes, Route } from 'react-router-dom';
 import './App.css';
-import Dashboard from './dashboard';
-import Register from './authentication/register';
-import LogIn from './authentication/login';
-import Error from './error';
+import Dashboard from './pages/dashboard';
+import Register from './pages/authentication/register';
+import LogIn from './pages/authentication/login';
+import Error from './pages/error';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import ProtectedRoute from './components/protectedroute';
-import Project from './components/project';
+import Project from './pages/project';
+import CreatedTickets from './pages/createdtickets';
 
 
 function App() {
@@ -52,6 +53,7 @@ function App() {
         <Route path="/Project/:id" element={<ProtectedRoute isAuthenticated={authenticated} authenticationPath='/login' outlet={<Project />} />} />
         <Route path="*" element={<Error />} />
         <Route path="/" element={<ProtectedRoute isAuthenticated={authenticated} authenticationPath='/login' outlet={<Dashboard />} />} />
+        <Route path="/createdtickets" element={<ProtectedRoute isAuthenticated={authenticated} authenticationPath='/login' outlet={<CreatedTickets />} />}/>
       </Routes>
     );
 }

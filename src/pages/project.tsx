@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import CustomModal from "./modal";
-import CreateTicket from "./createticket";
-import TicketList from "./ticketlist";
+import CustomModal from "../components/modal";
+import CreateTicket from "../components/createticket";
+import TicketList from "../components/ticketlist";
 import { v4 as uuidv4 } from 'uuid';
-import TicketData from "./ticketdata";
+import TicketData from "../components/ticketdata";
 
 interface User {
     id: string,
