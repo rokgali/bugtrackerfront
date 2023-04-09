@@ -120,7 +120,7 @@ export default function TicketList(props: TicketListProps)
             className={`${
               props.selectedTicket?.id === ticket.id ? "bg-blue-100" : ""
             } hover:bg-blue-100`}
-            onClick={() => props.onTicketClick(ticket)}
+            onClick={!isOpen ? () => props.onTicketClick(ticket) : () => {}}
           >
             <td className="px-4 py-2">{ticket.title}</td>
             <td className="px-4 py-2">{ticket.description}</td>
@@ -136,11 +136,11 @@ export default function TicketList(props: TicketListProps)
             </td>
             <td><button onClick={handleModalOpen}>Edit</button></td>
             <CustomModal isOpen={isOpen} onRequestClose={handleModalClosed}>
-              <TicketEdit closeModal={handleModalClosed}/>
+              <TicketEdit selectedTicket={props.selectedTicket} closeModal={handleModalClosed}/>
             </CustomModal>
           </tr>
         ))}
       </tbody>
-    </table>
+    </table>  
   </div>);
 }
