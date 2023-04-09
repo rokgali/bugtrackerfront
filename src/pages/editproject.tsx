@@ -193,14 +193,21 @@ export default function EditProject()
         </CustomModal>
         </div>
         <div>
-            <CreateTicket handleSettingTicketList={handleSettingTicketList} userEmail={userEmail} projectId={id} users={projectUsers} userIds={userIds} />
+            <CreateTicket 
+                handleSettingTicketList={handleSettingTicketList} 
+                userEmail={userEmail} 
+                projectId={id} 
+                users={projectUsers} 
+                userIds={userIds} />
         </div>
         <div>
             <TicketList selectedTicket={selectedTicket} 
                         onTicketClick={handleTicketClick} 
                         projectId={id}
                         handleSettingTicketList={handleSettingTicketList}
-                        ticketList={ticketList} />
+                        ticketList={ticketList}
+                        projectUsers={projectUsers}
+                         />
         </div>
         <div>
             {selectedTicket && <TicketData userEmail={userEmail} selectedTicket={selectedTicket} />}

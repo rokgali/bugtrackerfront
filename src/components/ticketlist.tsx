@@ -46,6 +46,7 @@ interface TicketListProps {
     onTicketClick: (ticket: TicketData) => void
     handleSettingTicketList: (ticketList: TicketData[]) => void
     ticketList: TicketData[]
+    projectUsers: UserData[]
 }
 
 export default function TicketList(props: TicketListProps)
@@ -89,6 +90,7 @@ export default function TicketList(props: TicketListProps)
     const handleModalClosed = () => {
       setIsOpen(false);
     }
+
 
     console.log(props.ticketList);
 
@@ -136,7 +138,8 @@ export default function TicketList(props: TicketListProps)
             </td>
             <td><button onClick={handleModalOpen}>Edit</button></td>
             <CustomModal isOpen={isOpen} onRequestClose={handleModalClosed}>
-              <TicketEdit selectedTicket={props.selectedTicket} closeModal={handleModalClosed}/>
+              <TicketEdit handleSettingTicketList={props.handleSettingTicketList} selectedTicket={props.selectedTicket} closeModal={handleModalClosed} 
+              projectUsers={props.projectUsers} ticketList={props.ticketList}/>
             </CustomModal>
           </tr>
         ))}
