@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import axios from 'axios';
 
 interface User {
     id: string,
@@ -113,14 +114,19 @@ export default function TicketEdit(props: TicketEditProps)
     }, [assignedUsers])
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-
-        const result = props.ticketList.findIndex(t => t.id == editData.id);
-        const listOfTickets = props.ticketList;
-        listOfTickets[result] = editedTicket
-
-        props.handleSettingTicketList(listOfTickets);
-
-        props.closeModal();
+        axios.post('https://localhost:7047/api/Ticket/EditTicket', editData)
+        .then(res => {
+            console.log(res.data);
+            const result = props.ticketList.findIndex(t => t.id == editData.id);
+            const listOfTickets = props.ticketList;
+            listOfTickets[result] = editedTicket
+            props.handleSettingTicketList(listOfTickets);
+            props.closeModal();
+        })
+        .catch(err => {
+            console.error(err);
+            props.closeModal();
+        })
     }
 
     return (
@@ -170,8 +176,8 @@ export default function TicketEdit(props: TicketEditProps)
                         </select>
                     </label>
                 </div>
-                {props.projectUsers?.map(user => (
-                    <div key={user.id}>
+                {props.projectUsers?.map((user, index) => (
+                    <div key={index}>
                         <label>{user.email}
                             <input type="checkbox" checked={assignedUsers.some(u => u.id === user.id)} 
                             onChange={() => handleAssignedUsersChange(user)} />

@@ -177,14 +177,14 @@ export default function EditProject()
         <div>
             <div className="text-3xl">Team members</div>
             {projectUsers.map(user => 
-            <div key={uuidv4()}>{user.name} {user.surname} {user.email}</div>
+            <div key={user.id}>{user.name} {user.surname} {user.email}</div>
             )}
         <button type="button" className="rounded-md shadow-md bg-orange-700 py-1 px-1" onClick={handleModalOpen}>Edit team members</button>
         <CustomModal isOpen={modalOpen} onRequestClose={handleModalClosed}>
             <form onSubmit={handleSubmit}>
             <div className="text-3xl">Edit team</div>
-            {userData.map((user, index)=>(
-                <p><label key={index}>{user.name} {user.surname}<input type="checkbox"
+            {userData.map((user)=>(
+                <p><label key={user.id}>{user.name} {user.surname}<input type="checkbox"
                 checked={projectUsers.some(selectedUser => selectedUser.id === user.id)}
                 onChange={() => handleUserSelection(user)}></input></label></p>
             ))}

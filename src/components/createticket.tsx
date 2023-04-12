@@ -173,19 +173,13 @@ export default function CreateTicket(props: ticketProps)
                         </div>
                     </div>
                     
-                    {props.users.map((user, index)=>(
-                        <div><label key={index}>{user.id} {user.name} {user.surname} {user.email}
+                    {props.users.map((user)=>(
+                        <div><label key={user.id}>{user.id} {user.name} {user.surname} {user.email}
                         <input onChange={() => handleChange(user)} type="checkbox"></input></label></div>
                     ))}
 
                     <button type="submit">Submit</button>
                 </form>
-                <div>
-                    <div className="text-3xl">Selected users ids</div>
-                    {selectedUserIds.map(id=>(
-                        <div key={uuidv4()}>{id}</div>
-                    ))} 
-                </div>
             </CustomModal>
         </div>
     );
