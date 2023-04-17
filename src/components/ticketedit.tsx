@@ -72,9 +72,9 @@ export default function TicketEdit(props: TicketEditProps)
         id: props.selectedTicket?.id ?? "123",
         title: props.selectedTicket?.title ?? "",
         description: props.selectedTicket?.description ?? "",
-        priority: props.selectedTicket?.priority ?? 0,
-        type: props.selectedTicket?.type ?? 0,
-        status: props.selectedTicket?.status ?? 0,
+        priority: props.selectedTicket?.priority ? Number(props.selectedTicket?.priority) : 0,
+        type: props.selectedTicket?.type ? Number(props.selectedTicket?.type) : 0,
+        status: props.selectedTicket?.status ? Number(props.selectedTicket?.status) : 0,
         userIds: []
     });
 
@@ -86,8 +86,10 @@ export default function TicketEdit(props: TicketEditProps)
     }, [])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        setEditedTicket({...editedTicket, [e.target.name]: e.target.value})
-        setEditData({...editData, [e.target.name]: e.target.value});
+        const { name, value } = e.target;
+        const parsedValue = name === 'priority' || name === 'type' || name === 'status' ? parseInt(value, 10) : value;
+        setEditedTicket({...editedTicket, [name]: value})
+        setEditData({...editData, [name]: parsedValue});
     }
 
     const handleAssignedUsersChange = (user: User) => {
@@ -114,13 +116,18 @@ export default function TicketEdit(props: TicketEditProps)
     }, [assignedUsers])
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        console.log(editData);
         axios.post('https://localhost:7047/api/Ticket/EditTicket', editData)
         .then(res => {
             console.log(res.data);
-            const result = props.ticketList.findIndex(t => t.id == editData.id);
+            const result = props.ticketList.findIndex(t => t.id === editData.id);
             const listOfTickets = props.ticketList;
-            listOfTickets[result] = editedTicket
-            props.handleSettingTicketList(listOfTickets);
+            console.log(listOfTickets[result]);
+            console.log(editedTicket);
+            const editedListOfTickets = listOfTickets.map((ticket, index) => index === result ? editedTicket : ticket);
+            console.log(editedListOfTickets);
+            props.handleSettingTicketList(editedListOfTickets);
             props.closeModal();
         })
         .catch(err => {
