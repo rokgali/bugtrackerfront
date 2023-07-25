@@ -88,7 +88,10 @@ export default function EditProject()
         axios.get<string>('https://localhost:7047/api/User/GetUserEmail' + `?jwt=${jwt}`)
         .then(res => {
         console.log(res.data);
-        setUserEmail(res.data)
+        if(res.data)
+        {
+            setUserEmail(res.data)
+        }
         });
 
         axios.post<User[]>('https://localhost:7047/api/Project/GetAssignedUsers?projectId=' + `${id}`)

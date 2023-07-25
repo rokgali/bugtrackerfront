@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import CustomModal from "./modal";
 import axios from 'axios';  
-import { v4 as uuidv4 } from 'uuid';
 
 enum Priority {
     high,
@@ -125,7 +124,17 @@ export default function CreateTicket(props: ticketProps)
 
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        axios.post('https://localhost:7047/api/Ticket/CreateTicket', transferData)
+        
+        axios.post('https://localhost:7047/api/Ticket/CreateTicket', {
+            Name: transferData.name,
+            Description: transferData.description,
+            Priority: Number(transferData.priority),
+            Type: Number(transferData.type),
+            Status: Number(transferData.status),
+            AuthorEmail: props.userEmail,
+            UserIds: transferData.userIds,
+            ProjectId: transferData.projectId
+        })
         .then(res =>{ console.log(res);
             console.log(transferData);
             handleTicketList();
